@@ -1,0 +1,11 @@
+Jag skapade ett .py program där jag kunde mata in y=kx+m för att på reda på om de värderna jag angav log ovanför/höger, under/vänster om linjen
+Jag matade in datan i systemet med användning av pandas
+så börja jag med att beräkna medelvärdet av x och y med angiven data
+K sätts till -1 som gör så att linjen lutar neråt från vänster till höger
+skärningen sätts till medelvärdet av y vilket bestämmer var linjen skär y axeln
+sen så skrevs en funktion som returnerar 1 om punkten är ovanför linjen annars så returnear den 0
+varje punkt i datasetet klassificeras med hjälp av classify_point funktionen resultatet lagras i en ny kolumn i dataramen som kallas label
+skapar en ny csv med den nya klassificerade datan
+definierar x och y värden för linjen
+skapar scatter plotten som visar punkterna som är ovanför linjen (1) och nedanför (0)
+linjen rätas med hjälp av de beräknade x och y värderna
