@@ -90,7 +90,7 @@ def get_movie_selection(movies_merged, search_term):
 def get_recommendations(movie_idx, movies_merged, knn, features_matrix):
     """Get top 5 similar movies"""
     try:
-        # Hitta nearest neighbors (exclude self)
+        # Hitta nearest neighbors (exkludera self)
         distances, indices = knn.kneighbors(features_matrix[movie_idx])
         recommendations = movies_merged.iloc[indices[0][1:6]][['title', 'genres', 'avg_rating']]
         return recommendations, None
