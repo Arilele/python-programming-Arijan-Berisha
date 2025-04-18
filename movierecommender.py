@@ -14,7 +14,7 @@ def load_data():
         movies = pd.read_csv(movies_path)
         tags = pd.read_csv(tags_path)
         
-        # Only load the necessary columns from ratings to save memory
+        # Bara ta upp viktiga kolumner för att spara minne
         ratings = pd.read_csv(ratings_path, usecols=['movieId', 'rating'])
         
         return movies, tags, ratings
@@ -26,25 +26,25 @@ def load_data():
 def preprocess_data(movies, tags, ratings):
     """Combine and preprocess movie data"""
     try:
-        # Combine all tags for each movie
+        # Kombinera alla taggar för varje film
         movie_tags = tags.groupby('movieId')['tag'].apply(
             lambda x: ' '.join(str(t) for t in x if pd.notna(t))
         ).reset_index(name='combined_tags')
         
-        # Calculate average ratings for each movie
+        # Kalkulera average rating för varje film
         avg_ratings = ratings.groupby('movieId')['rating'].mean().reset_index(name='avg_rating')
         
-        # Merge with movie data
+        # Merge med movie data
         movies_merged = pd.merge(movies, movie_tags, on='movieId', how='left')
         movies_merged = pd.merge(movies_merged, avg_ratings, on='movieId', how='left')
         
         movies_merged['combined_tags'] = movies_merged['combined_tags'].fillna('')
         movies_merged['avg_rating'] = movies_merged['avg_rating'].fillna('No ratings')
         
-        # Combine genres and tags into single feature
+        # Kombinera genrer och taggar till en singel feature
         movies_merged['features'] = movies_merged['genres'] + ' ' + movies_merged['combined_tags']
         
-        # Create TF-IDF feature matrix
+        # Skapa TF-IDF feature matrix
         tfidf = TfidfVectorizer(stop_words='english')
         features_matrix = tfidf.fit_transform(movies_merged['features'])
         
@@ -57,7 +57,7 @@ def preprocess_data(movies, tags, ratings):
 def train_model(features_matrix):
     """Train KNN model on feature matrix"""
     try:
-        knn = NearestNeighbors(n_neighbors=6, metric='cosine')  # 6 neighbors (1 is self)
+        knn = NearestNeighbors(n_neighbors=6, metric='cosine')  # 6 neighbors (1 är self)
         knn.fit(features_matrix)
         return knn
     except Exception as e:
@@ -90,7 +90,7 @@ def get_movie_selection(movies_merged, search_term):
 def get_recommendations(movie_idx, movies_merged, knn, features_matrix):
     """Get top 5 similar movies"""
     try:
-        # Find nearest neighbors (excluding self)
+        # Hitta nearest neighbors (exclude self)
         distances, indices = knn.kneighbors(features_matrix[movie_idx])
         recommendations = movies_merged.iloc[indices[0][1:6]][['title', 'genres', 'avg_rating']]
         return recommendations, None
@@ -121,14 +121,14 @@ def main():
             print("Please enter a movie title")
             continue
             
-        # Get user's movie selection
+        # Få användarens movie selection
         movie_idx, error = get_movie_selection(movies_merged, search_term)
         
         if error:
             print(f"\nError: {error}")
             continue
             
-        # Get and display recommendations
+        # Få och visa rekommendationer
         original_title = movies_merged.loc[movie_idx, 'title']
         original_rating = movies_merged.loc[movie_idx, 'avg_rating']
         
